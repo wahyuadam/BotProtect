@@ -120,13 +120,20 @@ tracer.addOpInterrupt(26, RECEIVE_MESSAGE)
 def SEND_MESSAGE(op):
     msg = op.message
     try:
+        if msg.toType == 2:
+            if msg.contentType == 0:
+#-------------------------------------------------------------
+
+def SEND_MESSAGE(op):
+    msg = op.message
+    try:
         if msg.toType == 0:
             if msg.contentType == 0:
-                if msg.text == "Mid":
+                if msg.text == "mid":
                     sendMessage(msg.to, msg.to)
-                if msg.text == "Me":
+                if msg.text == "me":
                     sendMessage(msg.to, text=None, contentMetadata={'mid': msg.from_}, contentType=13)
-                if msg.text == "Gift":
+                if msg.text == "gift":
                     sendMessage(msg.to, text="gift sent", contentMetadata=None, contentType=9)
                 else:
                     pass
@@ -265,7 +272,7 @@ def SEND_MESSAGE(op):
                     elapsed_time = time.time() - start
                     sendMessage(msg.to, "%sseconds" % (elapsed_time))
                     print ("\nCek Speed Bot")
-
+#-------------------------------------------------------------
                 if msg.text == "Tagall":
 		      group = client.getGroup(msg.to)
 		      mem = [contact.mid for contact in group.members]
@@ -276,6 +283,34 @@ def SEND_MESSAGE(op):
                        msg.text = "@"+xname+" "
 		       msg.contentMetadata ={'MENTION':'{"MENTIONEES":[{"S":"0","E":'+json.dumps(xlen)+',"M":'+json.dumps(mm)+'}]}','EMTVER':'4'}
 		       try:
+#----------------------------------------------- 
+            elif msg.text in ["Cipok","Miss you","Tagall"]:
+                  group = cl.getGroup(msg.to)
+                  nama = [contact.mid for contact in group.members]
+
+                  cb = ""
+                  cb2 = ""
+                  strt = int(0)
+                  akh = int(0)
+                  for md in nama:
+                      akh = akh + int(6)
+
+                      cb += """{"S":"""+json.dumps(str(strt))+""","E":"""+json.dumps(str(akh))+""","M":"""+json.dumps(md)+"},"""
+
+                      strt = strt + int(7)
+                      akh = akh + 1
+                      cb2 += "@nrik \n"
+
+                  cb = (cb[:int(len(cb)-1)])
+                  msg.contentType = 0
+                  msg.text = cb2
+                  msg.contentMetadata ={'MENTION':'{"MENTIONEES":['+cb+']}','EMTVER':'4'}
+
+                  try:
+                      cl.sendMessage(msg)
+                  except Exception as error:
+                      print error
+#-----------------------------------------------
                          client.sendMessage(msg)
 		       except Exception as error:
                    	 print error
